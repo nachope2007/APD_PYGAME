@@ -61,6 +61,17 @@ def dibujar_texto_centrado(ventana, texto, fuente, color, y):
     x = (ANCHO_VENTANA - texto_superficie.get_width()) // 2
     ventana.blit(texto_superficie, (x, y))
 
+def dibujar_pregunta_con_saltos(ventana, pregunta, fuente, color, y_inicial):
+    """Dibuja una pregunta respetando los saltos de línea \n"""
+    lineas = pregunta.split('\n')
+    y_actual = y_inicial
+    
+    for linea in lineas:
+        dibujar_texto_centrado(ventana, linea, fuente, color, y_actual)
+        y_actual += fuente.get_height() + 5
+    
+    return y_actual
+
 def dibujar_texto(ventana, texto, fuente, color, pos):
     """Dibuja texto en una posición específica"""
     texto_superficie = fuente.render(texto, True, color)
@@ -68,8 +79,7 @@ def dibujar_texto(ventana, texto, fuente, color, pos):
 
 def formatear_tiempo(segundos):
     """Convierte segundos a formato MM:SS"""
-    tiempo_segundos = int(tiempo_segundos)
-
+    segundos = int(segundos)  # Cambié tiempo_segundos por segundos
     minutos = segundos // 60
     segundos = segundos % 60
     return f"{minutos:02d}:{segundos:02d}"

@@ -25,7 +25,7 @@ if ICONO_JUEGO:
 
     fuente_grande = pygame.font.Font("assets/fonts/napstablook.otf", 35)
     fuente_mediana = pygame.font.Font("assets/fonts/napstablook.otf", 24)
-    fuente_pequena = pygame.font.Font("assets/fonts/napstablook.otf", 18)
+    fuente_chica = pygame.font.Font("assets/fonts/napstablook.otf", 18)
 
 
 # Variables del juego
@@ -56,14 +56,14 @@ botones_opciones = []
 for i in range(3):
     x = 50 + i * 250
     y = 400
-    boton = crear_boton((x, y), 200, 50, "", fuente_pequena)
+    boton = crear_boton((x, y), 200, 50, "", fuente_chica)
     botones_opciones.append(boton)
 
 # Botón continuar
 boton_continuar = crear_boton((350, 500), 100, 50, "CONTINUAR", fuente_mediana)
 
 # Botón volver al menú
-boton_menu = crear_boton((350, 450), 150, 50, "VOLVER AL MENU", fuente_pequena)
+boton_menu = crear_boton((350, 450), 150, 50, "VOLVER AL MENU", fuente_chica)
 
 # Reloj para controlar FPS
 reloj = pygame.time.Clock()
@@ -71,13 +71,11 @@ reloj = pygame.time.Clock()
 # Función para dibujar el menú principal
 def dibujar_menu():
     ventana.fill(COLOR_FONDO)
-    
-    if IMG_FONDO:
-        ventana.blit(IMG_FONDO, (0, 0))
+    ventana.blit(IMG_FONDO, (0, 0))
     
     # Título
     dibujar_texto_centrado(ventana, "Bienvenido al EscapeRoom", fuente_grande, COLOR_BLANCO, 50)
-    dibujar_texto_centrado(ventana, "de Programación!", fuente_grande, COLOR_BLANCO, 90)
+    dibujar_texto_centrado(ventana, "de Programacion!", fuente_grande, COLOR_BLANCO, 90)
     
     # Cantidad de participantes
     dibujar_texto_centrado(ventana, "Elija la cantidad de participantes", fuente_mediana, COLOR_BLANCO, 150)
@@ -92,9 +90,7 @@ def dibujar_menu():
 # Función para dibujar ingreso de nombre
 def dibujar_ingreso_nombre():
     ventana.fill(COLOR_FONDO)
-    
-    if IMG_FONDO:
-        ventana.blit(IMG_FONDO, (0, 0))
+    ventana.blit(IMG_FONDO, (0, 0))
     
     # Título
     dibujar_texto_centrado(ventana, f"INGRESE EL NOMBRE DEL", fuente_mediana, COLOR_BLANCO, 150)
@@ -111,9 +107,7 @@ def dibujar_ingreso_nombre():
 # Función para dibujar la sala de juego
 def dibujar_sala_juego():
     ventana.fill(COLOR_FONDO)
-    
-    if IMG_FONDO:
-        ventana.blit(IMG_FONDO, (0, 0))
+    ventana.blit(IMG_FONDO, (0, 0))
     
     # Información superior
     dibujar_texto(ventana, f"SALA {sala_actual + 1}", fuente_grande, COLOR_BLANCO, (50, 20))
@@ -128,7 +122,7 @@ def dibujar_sala_juego():
     
     # Pregunta
     desafio = DESAFIOS[sala_actual]
-    dibujar_texto_centrado(ventana, desafio['pregunta'], fuente_mediana, COLOR_BLANCO, 200)
+    dibujar_pregunta_con_saltos(ventana, desafio['pregunta'], fuente_mediana, COLOR_BLANCO, 170)
     
     # Opciones
     mouse_pos = pygame.mouse.get_pos()
@@ -137,15 +131,12 @@ def dibujar_sala_juego():
         dibujar_boton(ventana, boton, mouse_pos)
     
     # Imagen de puerta (si está disponible)
-    if IMG_PUERTA_CERRADA:
-        ventana.blit(IMG_PUERTA_CERRADA, (600, 200))
+    ventana.blit(IMG_PUERTA_CERRADA, (690, 250))
 
 # Función para dibujar resultado de sala
 def dibujar_resultado_sala():
     ventana.fill(COLOR_FONDO)
-    
-    if IMG_FONDO:
-        ventana.blit(IMG_FONDO, (0, 0))
+    ventana.blit(IMG_FONDO, (0, 0))
     
     jugador = jugadores[jugador_actual]
     
@@ -159,15 +150,12 @@ def dibujar_resultado_sala():
         dibujar_texto_centrado(ventana, "INCORRECTO!", fuente_grande, COLOR_INCORRECTO, 200)
         dibujar_texto_centrado(ventana, "Se acabaron los intentos", fuente_mediana, COLOR_BLANCO, 250)
         
-        if IMG_PUERTA_CERRADA:
-            ventana.blit(IMG_PUERTA_CERRADA, (350, 300))
+        ventana.blit(IMG_PUERTA_CERRADA, (350, 300))
 
 # Función para dibujar resultado final del jugador
 def dibujar_resultado_final():
     ventana.fill(COLOR_FONDO)
-    
-    if IMG_FONDO:
-        ventana.blit(IMG_FONDO, (0, 0))
+    ventana.blit(IMG_FONDO, (0, 0))
     
     jugador = jugadores[jugador_actual]
     puntaje_total = calcular_puntaje_total(jugador['puntajes'])
@@ -192,6 +180,7 @@ def dibujar_resultado_final():
     dibujar_boton(ventana, boton_continuar, mouse_pos)
 
 # Función para dibujar tabla final
+# Función para dibujar tabla final
 def dibujar_tabla_final():
     ventana.fill(COLOR_FONDO)
     
@@ -202,13 +191,37 @@ def dibujar_tabla_final():
     dibujar_texto_centrado(ventana, "TABLA DE RESULTADOS", fuente_mediana, COLOR_BLANCO, y)
     y += 40
     
+    # Títulos de las columnas
+    dibujar_texto(ventana, "NOMBRE", fuente_chica, COLOR_AMARILLO, (50, y))
+    dibujar_texto(ventana, "PUNTOS", fuente_chica, COLOR_AMARILLO, (180, y))
+    dibujar_texto(ventana, "SALA 1", fuente_chica, COLOR_AMARILLO, (280, y))
+    dibujar_texto(ventana, "COMPLETO", fuente_chica, COLOR_AMARILLO, (380, y))
+    y += 30
+    
+    # Línea separadora (opcional)
+    pygame.draw.line(ventana, COLOR_BLANCO, (50, y-5), (450, y-5), 1)
+    
+    # Datos de los jugadores
     for jugador in resultados_finales:
         puntaje_total = calcular_puntaje_total(jugador['puntajes'])
         primera_sala = "SI" if jugador['sala_actual'] > 0 else "NO"
         completo = "SI" if jugador['completo'] else "NO"
         
-        texto = f"{jugador['nombre'][:10]:<10} {puntaje_total:<6} {primera_sala:<4} {completo:<4}"
-        dibujar_texto(ventana, texto, fuente_pequena, COLOR_BLANCO, (50, y))
+        # Nombre (limitado a 10 caracteres)
+        nombre_corto = jugador['nombre'][:10] if len(jugador['nombre']) > 10 else jugador['nombre']
+        dibujar_texto(ventana, nombre_corto, fuente_chica, COLOR_BLANCO, (50, y))
+        
+        # Puntaje
+        dibujar_texto(ventana, str(puntaje_total), fuente_chica, COLOR_BLANCO, (180, y))
+        
+        # Primera sala (con color)
+        color_primera = COLOR_CORRECTO if primera_sala == "SI" else COLOR_INCORRECTO
+        dibujar_texto(ventana, primera_sala, fuente_chica, color_primera, (280, y))
+        
+        # Completó (con color)
+        color_completo = COLOR_CORRECTO if completo == "SI" else COLOR_INCORRECTO
+        dibujar_texto(ventana, completo, fuente_chica, color_completo, (380, y))
+        
         y += 25
     
     # Resultados del torneo
@@ -219,20 +232,20 @@ def dibujar_tabla_final():
     # Mayor puntaje
     ganadores, max_puntaje = obtener_ganadores_puntaje(resultados_finales)
     texto_ganadores = ", ".join(ganadores)
-    dibujar_texto(ventana, f"Mayor puntaje ({max_puntaje}): {texto_ganadores}", fuente_pequena, COLOR_BLANCO, (50, y))
+    dibujar_texto(ventana, f"Mayor puntaje ({max_puntaje}): {texto_ganadores}", fuente_chica, COLOR_BLANCO, (50, y))
     y += 25
     
     # Llegaron más lejos
     mas_lejos, max_sala = obtener_mas_lejos(resultados_finales)
     texto_lejos = ", ".join(mas_lejos)
-    dibujar_texto(ventana, f"Llegaron mas lejos ({max_sala} salas): {texto_lejos}", fuente_pequena, COLOR_BLANCO, (50, y))
+    dibujar_texto(ventana, f"Llegaron mas lejos ({max_sala} salas): {texto_lejos}", fuente_chica, COLOR_BLANCO, (50, y))
     y += 25
     
     # No superaron primera sala
     no_superaron = obtener_no_superaron_primera(resultados_finales)
     if no_superaron:
         texto_no_superaron = ", ".join(no_superaron)
-        dibujar_texto(ventana, f"No superaron primera sala: {texto_no_superaron}", fuente_pequena, COLOR_BLANCO, (50, y))
+        dibujar_texto(ventana, f"No superaron primera sala: {texto_no_superaron}", fuente_chica, COLOR_BLANCO, (50, y))
     
     # Botón volver al menú
     mouse_pos = pygame.mouse.get_pos()

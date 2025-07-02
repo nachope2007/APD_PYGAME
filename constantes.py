@@ -24,6 +24,13 @@ IMG_PUERTA_ABIERTA = pygame.image.load("assets/images/puerta_abierta.png")
 IMG_GANADOR = pygame.image.load("assets/images/ganador.png")
 IMG_PERDEDOR = pygame.image.load("assets/images/perdedor.png")
 
+# REDIMENCION DE IMAGENES
+
+IMG_FONDO = pygame.transform.scale(IMG_FONDO, (ANCHO_VENTANA, ALTO_VENTANA))
+IMG_PUERTA_CERRADA = pygame.transform.scale(IMG_PUERTA_CERRADA, (100, 100))
+IMG_PUERTA_ABIERTA = pygame.transform.scale(IMG_PUERTA_ABIERTA, (100, 100))
+IMG_GANADOR = pygame.transform.scale(IMG_GANADOR, (200, 150))
+IMG_PERDEDOR = pygame.transform.scale(IMG_PERDEDOR, (200, 150))
 
 # CONFIGURACIÓN DE JUEGO
 MAX_JUGADORES = 10
@@ -41,31 +48,30 @@ PUNTUACION_SALA_4 = 40
 # DESAFÍOS DEL JUEGO
 DESAFIOS = [
     {
-        "pregunta": "¿Cuál es el resultado de len('Python')?",
-        "opciones": ["5", "6", "7"],
+        "pregunta": "Cual es el resultado de 2 + 2 * 2?",
+        "opciones": ["8", "6", "4"],
         "respuesta": "6",
         "puntaje": PUNTUACION_SALA_1
     },
     {
-        "pregunta": "Dada la lista nums = [3,1,4,1,5], ¿cuál es sorted(nums)?",
-        "opciones": ["[1,1,3,4,5]", "[3,1,4,1,5]", "[5,4,3,1,1]"],
-        "respuesta": "[1,1,3,4,5]",
+        "pregunta": "Que palabra reservada en Python\nse usa para definir una funcion?",
+        "opciones": ["def", "function", "define"],
+        "respuesta": "def",
         "puntaje": PUNTUACION_SALA_2
     },
     {
-        "pregunta": "Dada mat = [[1,2],[3,4]], ¿qué valor tiene mat[1][0]?",
-        "opciones": ["1", "2", "3"],
-        "respuesta": "3",
+        "pregunta": "Como se llama el operador logico\nque representa 'y' en Python?",
+        "opciones": ["and", "&&", "&"],
+        "respuesta": "and",
         "puntaje": PUNTUACION_SALA_3
     },
     {
-        "pregunta": "¿Cuál es el resultado de not(True and False) or False?",
-        "opciones": ["True", "False", "None"],
-        "respuesta": "True",
+        "pregunta": "Que imprime: print(3 * 'ab')?",
+        "opciones": ["ababab", "ab3", "aaa bbb"],
+        "respuesta": "ababab",
         "puntaje": PUNTUACION_SALA_4
     }
 ]
-
 # ESTADOS DEL JUEGO
 ESTADO_MENU = 0
 ESTADO_INGRESO_NOMBRE = 1
