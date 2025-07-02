@@ -10,23 +10,20 @@ pygame.mixer.init()
 ventana = pygame.display.set_mode((ANCHO_VENTANA, ALTO_VENTANA))
 pygame.display.set_caption("EscapeRoom de Programacion")
 
-if ICONO_JUEGO:
-    pygame.display.set_icon(ICONO_JUEGO)
+# Cargar icono del juego
+
+pygame.display.set_icon(ICONO_JUEGO)
 
 # Cargar sonidos
-
-    sonido_fondo = pygame.mixer.Sound("assets/sounds/ghost-fight.mp3")
-    sonido_fondo.set_volume(0.045)
-    sonido_correcto = pygame.mixer.Sound("assets/sounds/sonido_correcto.mp3")
-    sonido_incorrecto = pygame.mixer.Sound("assets/sounds/sonido_incorrecto.mp3")
-
+sonido_fondo = pygame.mixer.Sound("assets/sounds/ghost-fight.mp3")
+sonido_fondo.set_volume(0.045)
+sonido_correcto = pygame.mixer.Sound("assets/sounds/sonido_correcto.mp3")
+sonido_incorrecto = pygame.mixer.Sound("assets/sounds/sonido_incorrecto.mp3")
 
 # Configurar fuentes
-
-    fuente_grande = pygame.font.Font("assets/fonts/napstablook.otf", 35)
-    fuente_mediana = pygame.font.Font("assets/fonts/napstablook.otf", 24)
-    fuente_chica = pygame.font.Font("assets/fonts/napstablook.otf", 18)
-
+fuente_grande = pygame.font.Font("assets/fonts/napstablook.otf", 35)
+fuente_mediana = pygame.font.Font("assets/fonts/napstablook.otf", 24)
+fuente_chica = pygame.font.Font("assets/fonts/napstablook.otf", 18)
 
 # Variables del juego
 estado_juego = ESTADO_MENU
@@ -116,18 +113,34 @@ while corriendo:
                 for i, boton in enumerate(botones_opciones):
                     if boton['rect'].collidepoint(evento.pos):
                         respuesta = DESAFIOS[sala_actual]['opciones'][i]
-                        procesar_respuesta(respuesta)
+                        mostrar_resultado, nuevos_intentos = procesar_respuesta(respuesta, jugadores, jugador_actual, sala_actual, sonido_correcto, sonido_incorrecto)
+                        intentos_actuales += nuevos_intentos
+                        if mostrar_resultado:
+                            tiempo_resultado = pygame.time.get_ticks()
         
         elif estado_juego == ESTADO_RESULTADO_FINAL:
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if boton_continuar['rect'].collidepoint(evento.pos):
-                    avanzar_jugador()
-        
+                    nuevo_estado, jugador_actual = avanzar_jugador(jugadores, jugador_actual, cantidad_jugadores, input_nombre, resultados_finales)
+                    estado_juego = nuevo_estado
+                    if nuevo_estado == ESTADO_INGRESO_NOMBRE:
+                        sala_actual = 0
+                        intentos_actuales = 0
+                        tiempo_restante = TIEMPO_POR_SALA
+
         elif estado_juego == ESTADO_TABLA_FINAL:
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if boton_menu['rect'].collidepoint(evento.pos):
-                    reiniciar_juego()
-    
+                    valores_iniciales = reiniciar_juego(input_nombre)
+                    estado_juego = valores_iniciales['estado_juego']
+                    cantidad_jugadores = valores_iniciales['cantidad_jugadores']
+                    jugador_actual = valores_iniciales['jugador_actual']
+                    jugadores = valores_iniciales['jugadores']
+                    tiempo_restante = valores_iniciales['tiempo_restante']
+                    sala_actual = valores_iniciales['sala_actual']
+                    intentos_actuales = valores_iniciales['intentos_actuales']
+                    mostrar_resultado = valores_iniciales['mostrar_resultado']
+                    resultados_finales = valores_iniciales['resultados_finales']
     # Actualizar temporizador
     if estado_juego == ESTADO_JUGANDO and not mostrar_resultado:
         tiempo_restante -= dt / 1000.0
@@ -154,18 +167,19 @@ while corriendo:
     
     # Dibujar según el estado
     if estado_juego == ESTADO_MENU:
-        dibujar_menu()
+        dibujar_menu(ventana, cantidad_jugadores, fuente_grande, fuente_mediana, boton_menos, boton_mas, boton_listo)
     elif estado_juego == ESTADO_INGRESO_NOMBRE:
-        dibujar_ingreso_nombre()
+        dibujar_ingreso_nombre(ventana, input_nombre, fuente_mediana, jugador_actual, boton_continuar)
     elif estado_juego == ESTADO_JUGANDO:
         if mostrar_resultado:
-            dibujar_resultado_sala()
+            dibujar_resultado_sala(ventana, jugadores, jugador_actual, sala_actual, fuente_grande, fuente_mediana, IMG_PUERTA_ABIERTA, IMG_PUERTA_CERRADA, sonido_correcto, sonido_incorrecto)
         else:
-            dibujar_sala_juego()
+            dibujar_sala_juego(ventana, jugadores, jugador_actual, sala_actual, tiempo_restante, intentos_actuales, botones_opciones, fuente_grande, fuente_mediana)
     elif estado_juego == ESTADO_RESULTADO_FINAL:
-        dibujar_resultado_final()
+        dibujar_resultado_final(ventana, jugadores, jugador_actual, fuente_grande, fuente_mediana, IMG_GANADOR, IMG_PERDEDOR, boton_continuar)
     elif estado_juego == ESTADO_TABLA_FINAL:
-        dibujar_tabla_final()
+        dibujar_tabla_final(ventana, resultados_finales, fuente_grande, fuente_mediana, fuente_chica, boton_menu)
+
     
     # Actualizar pantalla
     pygame.display.flip()

@@ -221,9 +221,8 @@ def dibujar_resultado_sala(ventana, jugadores, jugador_actual, sala_actual, fuen
     if jugador['sala_actual'] > sala_actual:  # Respondió correctamente
         dibujar_texto_centrado(ventana, "CORRECTO!", fuente_grande, COLOR_CORRECTO, 200)
         dibujar_texto_centrado(ventana, f"Ganaste {DESAFIOS[sala_actual]['puntaje']} puntos", fuente_mediana, COLOR_BLANCO, 250)
+        ventana.blit(IMG_PUERTA_ABIERTA, (350, 300))
         
-        if IMG_PUERTA_ABIERTA:
-            ventana.blit(IMG_PUERTA_ABIERTA, (350, 300))
     else:  # Se quedó sin intentos
         dibujar_texto_centrado(ventana, "INCORRECTO!", fuente_grande, COLOR_INCORRECTO, 200)
         dibujar_texto_centrado(ventana, "Se acabaron los intentos", fuente_mediana, COLOR_BLANCO, 250)
@@ -339,69 +338,63 @@ def inicializar_jugador(nombre):
     }
 
 # Función para procesar respuesta
-def procesar_respuesta(respuesta, sonido_correcto, sonido_incorrecto):
-    global intentos_actuales, mostrar_resultado, tiempo_resultado
-    
+def procesar_respuesta(respuesta, jugadores, jugador_actual, sala_actual, sonido_correcto, sonido_incorrecto):
+    """Procesa la respuesta del jugador y retorna el estado actualizado"""
     jugador = jugadores[jugador_actual]
     desafio = DESAFIOS[sala_actual]
+    
+    mostrar_resultado = False
+    nuevos_intentos = 0
     
     if respuesta == desafio['respuesta']:
         # Respuesta correcta
         jugador['puntajes'][sala_actual] = desafio['puntaje']
         jugador['sala_actual'] += 1
         
-        if sonido_correcto:
-            sonido_correcto.play()
+        sonido_correcto.play()
         
         mostrar_resultado = True
-        tiempo_resultado = pygame.time.get_ticks()
         
         # Verificar si completó todas las salas
         if jugador['sala_actual'] >= NUMERO_SALAS:
             jugador['completo'] = True
     else:
         # Respuesta incorrecta
-        intentos_actuales += 1
+        nuevos_intentos = 1
         
-        if sonido_incorrecto:
-            sonido_incorrecto.play()
-        
-        if intentos_actuales >= MAX_INTENTOS:
-            mostrar_resultado = True
-            tiempo_resultado = pygame.time.get_ticks()
+        sonido_incorrecto.play()
+    
+    return mostrar_resultado, nuevos_intentos
 
 # Función para avanzar al siguiente jugador o finalizar
-def avanzar_jugador(input_nombre, resultados_finales):
-    global jugador_actual, estado_juego, sala_actual, intentos_actuales, tiempo_restante
-    
+def avanzar_jugador(jugadores, jugador_actual, cantidad_jugadores, input_nombre, resultados_finales):
+    """Procesa el avance al siguiente jugador"""
     resultados_finales.append(jugadores[jugador_actual].copy())
     jugador_actual += 1
     
     if jugador_actual >= cantidad_jugadores:
         # Terminar juego
-        estado_juego = ESTADO_TABLA_FINAL
         guardar_resultados_json(resultados_finales)
+        return ESTADO_TABLA_FINAL, jugador_actual
     else:
         # Siguiente jugador
-        estado_juego = ESTADO_INGRESO_NOMBRE
         input_nombre['texto'] = ''
-        sala_actual = 0
-        intentos_actuales = 0
-        tiempo_restante = TIEMPO_POR_SALA
+        return ESTADO_INGRESO_NOMBRE, jugador_actual
 
 # Función para reiniciar juego
 def reiniciar_juego(input_nombre):
-    global estado_juego, cantidad_jugadores, jugador_actual, jugadores, tiempo_restante
-    global sala_actual, intentos_actuales, mostrar_resultado, resultados_finales
-    
-    estado_juego = ESTADO_MENU
-    cantidad_jugadores = 1
-    jugador_actual = 0
-    jugadores = []
-    tiempo_restante = TIEMPO_POR_SALA
-    sala_actual = 0
-    intentos_actuales = 0
-    mostrar_resultado = False
-    resultados_finales = []
+    """Reinicia todos los valores del juego"""
     input_nombre['texto'] = ''
-
+    
+    # Retornar los valores iniciales
+    return {
+        'estado_juego': ESTADO_MENU,
+        'cantidad_jugadores': 1,
+        'jugador_actual': 0,
+        'jugadores': [],
+        'tiempo_restante': TIEMPO_POR_SALA,
+        'sala_actual': 0,
+        'intentos_actuales': 0,
+        'mostrar_resultado': False,
+        'resultados_finales': []
+    }
